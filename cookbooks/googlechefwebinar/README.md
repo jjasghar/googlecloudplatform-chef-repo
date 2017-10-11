@@ -17,6 +17,7 @@ ssh into chef-server:
 gcloud compute --project "jj-test-kitchen" ssh --zone "us-west1-a" "chef-server"
 sudo su -
 cat /root/delivery.pem
+cat /root/googlechef-validator.pem
 ```
 
 ssh into automate:
@@ -53,7 +54,6 @@ ssh into chef-server:
 ```
 gcloud compute --project "jj-test-kitchen" ssh --zone "us-west1-a" "chef-server"
 sudo su -
-
 ```
 
 Ping automate to make sure the connection works, and set up the connections:
@@ -68,8 +68,8 @@ sudo chef-server-ctl restart opscode-erchef
 Add the following to `/etc/opscode/chef-server.rb` on the Chef server:
 
 ```ruby
-data_collector['root_url'] = 'https://chef-server.local/data-collector/v0/'
-profiles['root_url'] = 'https://chef-server.local'
+data_collector['root_url'] = 'https://automate.local/data-collector/v0/'
+profiles['root_url'] = 'https://automate.local'
 ```
 
 Then run:
@@ -84,29 +84,21 @@ Now lets create a server:
 CRED_PATH=~/jj-test-kitchen-8dd45fc19cc2.json chef-client -z --runlist "recipe[googlechefwebinar::_create_node]"
 ```
 
+Now lets create a multiple servers:
+
+```
+CRED_PATH=~/jj-test-kitchen-8dd45fc19cc2.json chef-client -z --runlist "recipe[googlechefwebinar::_create_multiple_nodes]"
+```
+
+Login to automate to see them check in!
+
+Upload a cookbook or two, maybe audit cookbook or apache cookbook and run the
+converge.
+
 Clean up:
 
 ```
 CRED_PATH=~/jj-test-kitchen-8dd45fc19cc2.json chef-client -z --runlist "recipe[googlechefwebinar::_delete_chef_server]"
 CRED_PATH=~/jj-test-kitchen-8dd45fc19cc2.json chef-client -z --runlist "recipe[googlechefwebinar::_delete_automate_server]"
-CRED_PATH=~/jj-test-kitchen-8dd45fc19cc2.json chef-client -z --runlist "recipe[googlechefwebinar::_delete_node]"
-```
-
-Setting up node:
-
-```
-mkdir /etc/chef/
-vim /etc/chef/googlechef-validator.pem
-vim /etc/chef/client.rb
-```
-
-client.rb:
-
-```ruby
-log_level        :info
-log_location     STDOUT
-chef_server_url  'https://chef-server.local/organizations/googlechef'
-validation_client_name 'googlechef-validator'
-validation_key '/etc/chef/googlechef-validator.pem'
-ssl_verify_mode :verify_none
+CRED_PATH=~/jj-test-kitchen-8dd45fc19cc2.json chef-client -z --runlist "recipe[googlechefwebinar::_delete_multiple_nodes]"
 ```

@@ -6,7 +6,7 @@ raise "Missing parameter 'CRED_PATH'. Please read docs at #{__FILE__}" \
   unless ENV.key?('CRED_PATH')
 
 myproject = 'jj-test-kitchen'
-instancename = 'machine-1'
+instancename = 'machine'
 
 gauth_credential 'mycred' do
   action :serviceaccount
@@ -22,9 +22,11 @@ gcompute_zone 'us-west1-a' do
   credential 'mycred'
 end
 
-gcompute_instance instancename do
-  action :delete
-  zone 'us-west1-a'
-  project myproject
-  credential 'mycred'
+for i in 1..10 do
+  gcompute_instance instancename+"-#{i}" do
+    action :delete
+    zone 'us-west1-a'
+    project myproject
+    credential 'mycred'
+  end
 end

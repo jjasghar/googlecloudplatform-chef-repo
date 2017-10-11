@@ -6,7 +6,7 @@ raise "Missing parameter 'CRED_PATH'. Please read docs at #{__FILE__}" \
   unless ENV.key?('CRED_PATH')
 
 myproject = "jj-test-kitchen"
-instancename = 'node'
+instancename = 'machine-1'
 
 gauth_credential 'mycred' do
   action :serviceaccount
