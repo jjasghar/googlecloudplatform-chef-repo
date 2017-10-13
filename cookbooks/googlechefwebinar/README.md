@@ -82,6 +82,15 @@ Now lets create a server:
 
 ```
 CRED_PATH=~/jj-test-kitchen-8dd45fc19cc2.json chef-client -z --runlist "recipe[googlechefwebinar::_create_node]"
+knife status
+```
+
+Lets upload the example cookbook, add it to the run list of the machine we created:
+
+```
+knife cookbook upload webserver
+knife node run_list add machine-1.c.jj-test-kitchen.internal 'recipe[webserver]'
+
 ```
 
 Now lets create a multiple servers:
